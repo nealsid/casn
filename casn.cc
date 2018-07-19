@@ -11,10 +11,10 @@ void* rdcss(RDCSSDescriptor* d) {
   do {
     // Try to compare the expected old value with what's at a2 and
     // swap it with the descriptor pointer.
-    bool succeeded = d->a2.compare_exchange_weak(d->o2, descriptorPointer);
-    // If we didn't succeed, figure out if the current value is a
-    // descriptor.
-    if (!succeeded) {
+    if (!d->a2.compare_exchange_weak(d->o2, descriptorPointer)) {
+      // If we didn't succeed, figure out if the current value is a
+      // descriptor.
+      //
       // We don't have the same CAS primitive as the paper requires -
       // ours doesn't return the old value.  We can load the old value
       // if the CAS fails, but that introduces a race condition.  The
