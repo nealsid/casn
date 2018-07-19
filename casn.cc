@@ -7,7 +7,7 @@ namespace casn {
   
 void* rdcss(RDCSSDescriptor* d) {
   void* oldValue;
-  void* descriptorPointer = (void *)((int)d | 1)
+  void* descriptorPointer = (void *)((uint64_t)d | 1);
   do {
     // Try to compare the expected old value with what's at a2 and
     // swap it with the descriptor pointer.
@@ -44,7 +44,7 @@ void* rdcss(RDCSSDescriptor* d) {
 
 void complete(RDCSSDescriptor* d) {
   void* controlValue = d->a1.load();
-  void* descriptor_void_ptr = (void *) d & (~2 << sizeof(void*));
+  void* descriptor_void_ptr = (void *) ((uint64_t)d | (uint64_t)1);
 
   if (controlValue == d->o1) {
     d->a2.compare_exchange_weak(descriptor_void_ptr, d->n2);
@@ -54,8 +54,7 @@ void complete(RDCSSDescriptor* d) {
 }
 
 bool isDescriptor(void* p) {
-  cout << "checking if " << p << " is a descriptor: " << ((uint64_t)p & 1) << endl;
-  return ((uint64_t)p & 1);
+  return ((uint64_t)p & (uint64_t)1);
 }
 
 }
